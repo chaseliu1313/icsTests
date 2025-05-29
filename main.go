@@ -47,7 +47,7 @@ func connectToKSMDB() (*pgxpool.Pool, error) {
 
 func getAPTType() string {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randomInt := r.Intn(12) + 1 // generates 1 to 12
+	randomInt := r.Intn(6) + 1 // generates 1 to 12
 	return fmt.Sprintf("type-%d", randomInt)
 }
 
