@@ -32,6 +32,11 @@ func connectToKSMDB() (*pgxpool.Pool, error) {
 
 	rows, err := pool.Query(context.Background(), "SELECT first_name FROM guest")
 
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
 	for rows.Next() {
 		var firstName string
 		err := rows.Scan(&firstName)
@@ -69,18 +74,14 @@ func getRandomFName() string {
 	return fNames[randomInt]
 }
 
-func main() {
-
-	connectToKSMDB()
-
+func generateFile(fileName string) {
 	location := time.Now().Location()
 	startOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 8, 0, 0, 0, location)
 	endOfDay := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 17, 0, 0, 0, location)
 
 	interval := 15 * time.Minute
-	filename := fmt.Sprintf("appointments_%d.ics", time.Now().Unix())
 
-	f, err := os.Create(filename)
+	f, err := os.Create(fileName)
 	if err != nil {
 		panic(err)
 	}
@@ -106,6 +107,18 @@ func main() {
 
 	f.WriteString("END:VCALENDAR\n")
 
-	fmt.Println("ICS file generated as", filename)
+	fmt.Println("ICS file generated as", fileName)
+}
+
+func main() {
+
+	var fileNames = []string{"link1.ics", "link2.ics", "link3.ics"}
+	connectToKSMDB()
+
+	for _, fName := range fileNames {
+
+		generateFile(fName)
+
+	}
 
 }
